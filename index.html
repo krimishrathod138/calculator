@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Advanced Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #1e1e1e;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .calculator {
+      background: #2c2c2c;
+      padding: 20px;
+      border-radius: 15px;
+      width: 350px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+    }
+
+    .display {
+      background-color: #000;
+      color: #0f0;
+      font-size: 2.5em;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: right;
+      overflow-x: auto;
+      margin-bottom: 15px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      padding: 20px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #444;
+      color: #fff;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: #666;
+    }
+
+    .operator {
+      background-color: #ff9500;
+    }
+
+    .equal {
+      background-color: #28a745;
+      grid-column: span 2;
+    }
+
+    .clear {
+      background-color: #e53935;
+    }
+
+    .function {
+      background-color: #1e88e5;
+    }
+
+    @media (max-width: 400px) {
+      .calculator {
+        width: 90%;
+      }
+
+      .display {
+        font-size: 2em;
+      }
+
+      button {
+        padding: 15px;
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="clear" onclick="clearDisplay()">C</button>
+      <button class="function" onclick="backspace()">⌫</button>
+      <button class="function" onclick="calculatePercentage()">%</button>
+      <button class="operator" onclick="appendOperator('/')">÷</button>
+
+      <button onclick="appendNumber('7')">7</button>
+      <button onclick="appendNumber('8')">8</button>
+      <button onclick="appendNumber('9')">9</button>
+      <button class="operator" onclick="appendOperator('*')">×</button>
+
+      <button onclick="appendNumber('4')">4</button>
+      <button onclick="appendNumber('5')">5</button>
+      <button onclick="appendNumber('6')">6</button>
+      <button class="operator" onclick="appendOperator('-')">−</button>
+
+      <button onclick="appendNumber('1')">1</button>
+      <button onclick="appendNumber('2')">2</button>
+      <button onclick="appendNumber('3')">3</button>
+      <button class="operator" onclick="appendOperator('+')">+</button>
+
+      <button onclick="appendNumber('0')">0</button>
+      <button onclick="appendNumber('.')">.</button>
+      <button class="equal" onclick="calculate()">=</button>
+      <button class="function" onclick="squareRoot()">√</button>
+      <button class="function" onclick="square()">x²</button>
+      <button class="function" onclick="reciprocal()">1/x</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById("display");
+
+    function appendNumber(num) {
+      if (display.innerText === '0' || display.innerText === 'Error') {
+        display.innerText = num;
+      } else {
+        display.innerText += num;
+      }
+    }
+
+    function appendOperator(op) {
+      const lastChar = display.innerText.slice(-1);
+      if ("+-*/".includes(lastChar)) {
+        display.innerText = display.innerText.slice(0, -1) + op;
+      } else {
+        display.innerText += op;
+      }
+    }
+
+    function clearDisplay() {
+      display.innerText = '0';
+    }
+
+    function backspace() {
+      if (display.innerText.length === 1 || display.innerText === 'Error') {
+        display.innerText = '0';
+      } else {
+        display.innerText = display.innerText.slice(0, -1);
+      }
+    }
+
+    function calculate() {
+      try {
+        let result = eval(display.innerText);
+        display.innerText = Number(result.toFixed(10)).toString();
+      } catch {
+        display.innerText = "Error";
+      }
+    }
+
+    function squareRoot() {
+      try {
+        let result = Math.sqrt(eval(display.innerText));
+        display.innerText = Number(result.toFixed(10)).toString();
+      } catch {
+        display.innerText = "Error";
+      }
+    }
+
+    function square() {
+      try {
+        let result = Math.pow(eval(display.innerText), 2);
+        display.innerText = Number(result.toFixed(10)).toString();
+      } catch {
+        display.innerText = "Error";
+      }
+    }
+
+    function reciprocal() {
+      try {
+        let result = 1 / eval(display.innerText);
+        display.innerText = Number(result.toFixed(10)).toString();
+      } catch {
+        display.innerText = "Error";
+      }
+    }
+
+    function calculatePercentage() {
+      try {
+        let result = eval(display.innerText) / 100;
+        display.innerText = Number(result.toFixed(10)).toString();
+      } catch {
+        display.innerText = "Error";
+      }
+    }
+
+    // Keyboard support
+    document.addEventListener("keydown", function (event) {
+      const key = event.key;
+      if (!isNaN(key) || key === '.') {
+        appendNumber(key);
+      } else if (["+", "-", "*", "/"].includes(key)) {
+        appendOperator(key);
+      } else if (key === 'Enter') {
+        event.preventDefault();
+        calculate();
+      } else if (key === 'Backspace') {
+        backspace();
+      } else if (key.toLowerCase() === 'c') {
+        clearDisplay();
+      }
+    });
+  </script>
+
+</body>
+</html>
